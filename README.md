@@ -14,14 +14,12 @@
 ```
 python3 pg_create_database.py
 ```
-2)  **sqlite**
-```
-python3 sqlite_create_database.py
-```
+
 
 ## Необхідні бібліотеки:
  - Flask
  - Flask-SQLAlchemy
  - Flask-Login
+ - Flask-WTF
 
 `pip install -r requirements.txt`
