@@ -1,9 +1,9 @@
-from flask import Flask
-from flask_login import LoginManager
+from flask import Flask, abort
+from flask_login import LoginManager, current_user
 from flask_wtf import CSRFProtect
-
+from functools import wraps
 from models import User
-from settings import DatabaseConfig, Session
+from settings import DatabaseConfig
 
 app = Flask(__name__)
 app.config.from_object(DatabaseConfig)
@@ -21,7 +21,23 @@ def load_user(user_id):
     return user
 
 
-from routes import *
+def admin_required(f):
+    @wraps(f)
+    def decorate_func(*args, **kwargs):
+        if not current_user.is_authenticated:
+            return abort(401)
+        elif not current_user.is_admin:
+            return abort(403)
+        return f(*args, **kwargs)
+    return decorate_func
+
+
+from routes.main import *
+from routes.users import *
+from routes.administration import add_position
+from routes.menu import *
+from routes.errors import *
+
 
 if __name__ == "__main__":
     print(app.url_map)
