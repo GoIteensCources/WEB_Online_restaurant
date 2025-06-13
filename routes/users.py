@@ -7,12 +7,6 @@ from models import User
 from settings import  Session_db, config
 
 
-@app.route("/profile")
-@login_required
-def profile():
-    return render_template("profile.html", name_restaurant=config.NAME_RESTAURNAT)
-
-
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":

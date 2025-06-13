@@ -34,9 +34,10 @@ def admin_required(f):
 
 from routes.main import *
 from routes.users import *
-from routes.administration import add_position
+from routes.administration import *
 from routes.menu import *
 from routes.errors import *
+from routes.orders import *
 
 
 if __name__ == "__main__":

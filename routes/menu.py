@@ -33,6 +33,7 @@ def position_details(name):
             basket = session.get('basket')
             basket[position_name] = position_num
             session['basket'] = basket
+            
         flash('Позицію додано у кошик!', category="successful")
     
     with Session_db() as cursor:

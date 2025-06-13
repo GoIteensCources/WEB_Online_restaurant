@@ -16,10 +16,6 @@ class User(UserMixin, Base):
     
     is_admin: Mapped[bool] = mapped_column(default=False)
     
-    reservations = relationship("Reservation", 
-                                foreign_keys="Reservation.user_id", 
-                                back_populates="user",
-                                cascade="all, delete-orphan")
     orders = relationship("Orders", 
                             foreign_keys="Orders.user_id",
                             back_populates='user', 
@@ -57,15 +53,6 @@ class Menu(Base):
     
     file_name: Mapped[str] = mapped_column(String)
 
-class Reservation(Base):
-    __tablename__ = "reservation"
-    id: Mapped[int] = mapped_column(primary_key=True)
-    time_start: Mapped[datetime] = mapped_column(DateTime)
-    type_table: Mapped[str] = mapped_column(String(20))
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-
-    user = relationship("User", foreign_keys="Reservation.user_id", back_populates="reservations")
-
 
 class Orders(Base):
     __tablename__ = "orders"
@@ -73,9 +60,10 @@ class Orders(Base):
     order_list: Mapped[dict] = mapped_column(JSONB)
     order_time: Mapped[datetime] = mapped_column(DateTime)
     user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
+    
+    status: Mapped[str] = mapped_column(default = "active")     # "disable", "compile"
 
     user = relationship("User", foreign_keys="Orders.user_id", back_populates="orders")
-
 
 
 # Ініціалізація бази даних і додавання товарів
