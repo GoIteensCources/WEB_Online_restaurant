@@ -4,7 +4,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from app import app
 from models import User
-from settings import  Session_db, config
+from settings import Session_db, config
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -17,7 +17,10 @@ def register():
 
         user = User.get_by_username(username)
         if user:
-            flash("Користувач з таким ім'ям вже існує. Спробуйте інше ім'я.", category="info")
+            flash(
+                "Користувач з таким ім'ям вже існує. Спробуйте інше ім'я.",
+                category="info",
+            )
             return redirect(url_for("register"))
         else:
             new_user = User(username=username, password=hashed, email=email)
@@ -37,7 +40,7 @@ def login():
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        
+
         user = User.get_by_username(username)
 
         if user and check_password_hash(user.password, password):

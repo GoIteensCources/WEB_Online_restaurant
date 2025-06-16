@@ -1,9 +1,11 @@
 from datetime import datetime
+
 from flask_login import UserMixin
-from sqlalchemy import String, select, DateTime, ForeignKey
+from sqlalchemy import DateTime, ForeignKey, String, select
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from werkzeug.security import generate_password_hash
-from sqlalchemy.dialects.postgresql import JSONB
+
 from settings import Base, Session_db
 
 
@@ -13,13 +15,15 @@ class User(UserMixin, Base):
     username: Mapped[str] = mapped_column(String(150))
     email: Mapped[str] = mapped_column(String(150), nullable=False)
     password: Mapped[str] = mapped_column(String(255), nullable=False)
-    
+
     is_admin: Mapped[bool] = mapped_column(default=False)
-    
-    orders = relationship("Orders", 
-                            foreign_keys="Orders.user_id",
-                            back_populates='user', 
-                            cascade="all, delete-orphan")
+
+    orders = relationship(
+        "Orders",
+        foreign_keys="Orders.user_id",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
 
     def __str__(self):
         return f"User: {self.username}"
@@ -37,9 +41,10 @@ class User(UserMixin, Base):
 
         with Session_db() as conn:
             # stmt = select(User).where(User.username == username)
-            stmt = select(User).filter_by(username = username)
+            stmt = select(User).filter_by(username=username)
             user = conn.scalar(stmt)
             return user if user else None
+
 
 class Menu(Base):
     __tablename__ = "menu"
@@ -50,7 +55,7 @@ class Menu(Base):
     description: Mapped[str] = mapped_column(String, nullable=True)
     price: Mapped[float] = mapped_column()
     active: Mapped[bool] = mapped_column(default=True)
-    
+
     file_name: Mapped[str] = mapped_column(String)
 
 
@@ -59,9 +64,9 @@ class Orders(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     order_list: Mapped[dict] = mapped_column(JSONB)
     order_time: Mapped[datetime] = mapped_column(DateTime)
-    user_id: Mapped[int] = mapped_column(ForeignKey('users.id'))
-    
-    status: Mapped[str] = mapped_column(default = "active")     # "disable", "compile"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+
+    status: Mapped[str] = mapped_column(default="active")  # "disable", "compile"
 
     user = relationship("User", foreign_keys="Orders.user_id", back_populates="orders")
 
@@ -73,30 +78,29 @@ def init_db():
     base.create_db()  # Створюємо таблиці
 
     user_admin = User(
-        username="admin", 
-        email="ax@gmail.com", 
+        username="admin",
+        email="ax@gmail.com",
         password=generate_password_hash("admin"),
-        is_admin=True
+        is_admin=True,
     )
-    
+
     m1 = Menu(
-        name = "Burger",
-        weight = "300",
-        ingredients = "булка, котлета теляча, сир, помідор, соус, лук, зелнь",
-        description = "Соковитий бургер",
-        price = 250, 
-        file_name = "burger.jpg",
+        name="Burger",
+        weight="300",
+        ingredients="булка, котлета теляча, сир, помідор, соус, лук, зелнь",
+        description="Соковитий бургер",
+        price=250,
+        file_name="burger.jpg",
     )
-    
+
     m2 = Menu(
-        name = "Салат з лососем",
-        weight = "150",
-        ingredients = "Лосось, мікс салатів, кунжут, соус",
-        description = "Салат дууууже смачний!!!",
-        price = 145, 
-        file_name = "salad.jpg",
+        name="Салат з лососем",
+        weight="150",
+        ingredients="Лосось, мікс салатів, кунжут, соус",
+        description="Салат дууууже смачний!!!",
+        price=145,
+        file_name="salad.jpg",
     )
-    
 
     with Session_db() as conn:
         conn.add_all([user_admin, m1, m2])

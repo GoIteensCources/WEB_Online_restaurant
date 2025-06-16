@@ -2,7 +2,7 @@ import os
 
 import dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker, scoped_session
+from sqlalchemy.orm import DeclarativeBase, scoped_session, sessionmaker
 
 dotenv.load_dotenv()
 
@@ -16,11 +16,11 @@ class DatabaseConfig:
     ROOT_DB_PASSWORD = os.getenv("DB_PASSWORD")
 
     SECRET_KEY = os.getenv("SECRET_KEY")
-    
-    MAX_CONTENT_LENGTH = 10*1024*1024
+
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024
     MAX_FORM_MEMORY_SIZE = 1024 * 1024  # 1MB
-    MAX_FORM_PARTS = 500    
-    
+    MAX_FORM_PARTS = 500
+
     NAME_RESTAURNAT = "CatCafe"
 
     def uri_postgres(self):
@@ -36,6 +36,7 @@ config = DatabaseConfig()
 # Налаштування бази даних Postgres
 engine = create_engine(config.uri_postgres(), echo=True)
 Session_db = scoped_session(sessionmaker(bind=engine))
+
 
 # Декларація базового класу для моделей, Необхідно для реалізації відношень у ORM
 class Base(DeclarativeBase):
